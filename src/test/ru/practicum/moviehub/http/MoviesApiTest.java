@@ -244,7 +244,7 @@ public class MoviesApiTest {
         assertEquals(404, resp.statusCode());
 
         String body = resp.body().trim();
-        assertTrue(body.contains("\"error\": \"Фильм не найден\""));
+        assertTrue(body.contains("\"error\": \"Фильм не найден, ID фильма: 999\""));
     }
 
     @Test
@@ -296,7 +296,7 @@ public class MoviesApiTest {
         assertEquals(404, resp.statusCode());
 
         String body = resp.body().trim();
-        assertTrue(body.contains("\"error\": \"Фильм не найден\""));
+        assertTrue(body.contains("\"error\": \"Фильм не найден, ID фильма: 999\""));
     }
 
     @Test

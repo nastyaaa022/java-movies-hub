@@ -8,9 +8,7 @@ import ru.practicum.moviehub.api.ErrorResponse;
 import ru.practicum.moviehub.model.Movie;
 import ru.practicum.moviehub.store.MoviesStore;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -154,7 +152,7 @@ public class MoviesHandler extends BaseHttpHandler {
         Movie movie = moviesStore.findById(id);
 
         if (movie == null) {
-            ErrorResponse error = new ErrorResponse("Фильм не найден");
+            ErrorResponse error = new ErrorResponse("Фильм не найден, ID фильма: " + id);
             sendJson(exchange, 404, convertErrorToJson(error));
             return;
         }
@@ -169,7 +167,7 @@ public class MoviesHandler extends BaseHttpHandler {
         if (deleted) {
             exchange.sendResponseHeaders(204, -1);
         } else {
-            ErrorResponse error = new ErrorResponse("Фильм не найден");
+            ErrorResponse error = new ErrorResponse("Фильм не найден, ID фильма: " + id);
             sendJson(exchange, 404, convertErrorToJson(error));
         }
     }
@@ -249,8 +247,18 @@ public class MoviesHandler extends BaseHttpHandler {
 
     private String readRequestBody(HttpExchange exchange) throws IOException {
         try (InputStream is = exchange.getRequestBody();
-             Scanner scanner = new Scanner(is, StandardCharsets.UTF_8.name())) {
-            return scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+             InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
+             BufferedReader bufferedReader = new BufferedReader(reader)) {
+
+            StringBuilder requestBody = new StringBuilder();
+            char[] buffer = new char[8192];
+            int charsRead;
+
+            while ((charsRead = bufferedReader.read(buffer)) != -1) {
+                requestBody.append(buffer, 0, charsRead);
+            }
+
+            return requestBody.toString();
         }
     }
 
